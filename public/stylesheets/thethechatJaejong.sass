@@ -8,8 +8,11 @@
 body
   margin: 0
   padding: 0
+  width: 100%
+  overflow-x: hidden
 
 .wrapper
+  width: inherit
   display: flex
   height: 100vh
   .empty-bar
@@ -122,9 +125,28 @@ body
       border-top: $basic-border
       padding: 8px 16px
       > .sender-group
-        > .icon-adder
+        display: flex
+        width: 100%
+        height: 48px
+        border: $basic-border
+        border-radius: 16px
+        overflow: hidden
+        > .emoticon-adder
+          width: 60px
+          text-align: center
+          line-height: 46px
         > .message-content
+          flex: 1
+          height: inherit
+          border-right: $basic-border
         > .file-adder
+          width: 36px
+          height: inherit
+          text-align: center
+          line-height: 46px
+          font-size: 1.6rem
+          background-color: #ddd
+
 
 
   .function-display
