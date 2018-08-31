@@ -3,96 +3,136 @@ html
   head
     meta(charset="UTF-8")
     title TheTheChat
-
-    // material icon
-    link(href="https://fonts.googleapis.com/icon?family=Material+Icons"
-    rel="stylesheet")
-    // fontawesome
+    link(rel='stylesheet', href='/stylesheets/jaejong.layout.css')
+    link(rel='stylesheet', href='/stylesheets/jaejong.color.css')
     link(rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous")
-
-    link(rel='stylesheet', href='/stylesheets/thethechatJaejong.css')
+    //script(src="/babel-polyfill/dist/polyfill.js")
+    script(src="https://code.jquery.com/jquery-3.3.1.js",
+    integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=",
+    crossorigin="anonymous")
 
   body
-    .wrapper
+    .chat-wrapper
       .empty-bar
-      .channel-display
-        .channel-header
-          .profile-image JH
-          .profile-name Jaejong Heo
-          .logout-button
-        .channel-option
-          .input-search
-            input
-          i.fas.fa-plus.channel-adder
-        .channel-body
-          .channel-group 채널 (4)
-          .channel-item
-            .icon-type.icon #
-            .text general
-            i.far.fa-eye-slash.icon.hidden
-            i.fas.fa-sign-out-alt.icon.hidden
-          .channel-item
-            i.fas.fa-lock
-            .text class_level1
-            i.far.fa-eye-slash.icon.hidden
-            i.fas.fa-sign-out-alt.icon.hidden
-          .channel-group 귓속말 (8)
-          .channel-item a
-          .channel-item s
-          .channel-item a
-          .channel-item s
-        .channel-footer THETHE.CHAT
-      .main-display
-        .chat-title-zone
-          i.material-icons star_border
-          i.material-icons lock
-          .chat-title web-class
-        .chat-logs-zone
-          .chat-with-profile
-            .profile-image HW
-            .text-zone
-              .profile-informations
-                .profile-name hyunwoo.han
-                .leader-mark Admin
-                .leader-mark Owner
-                .time 오후 4시 8분
-                i.fas.fa-cog
-              .chat-log 그렇게 채팅을 하였습니다.
-          .simple-chat
-            i.fas.fa-cog
-            .chat-log 호호호호 채팅이다
-          .simple-chat
-            i.fas.fa-cog
-            .chat-log 여러번 채팅을 해줘야 제맛이라고
-          .simple-chat
-            i.fas.fa-cog
-            .chat-log 볼 수 있죠 ㅎㅎ
-          .chat-with-profile
-            .profile-image JH
-            .text-zone
-              .profile-informations
-                .profile-name jaejong.heo
-                .time 오후 4시 10분
-              .chat-log 정말요?
-          .simple-chat
-            i.fas.fa-cog
-            .chat-log 그게 가능한가요?!
+      .left-side-bar
+        .left-header
+          .header-image SL
+          .header-name soojung.lee
+          .header-status
+            .i.fas.fa-angle-down
+        .left-input
+          .input-bar
+            .i.fas.fa-search
+            input(placeholder="검색 (CMD+K)")
+          .adder +
+        .left-body-part
+          .empty-part
+          .header-part 즐겨찾기 (1)
+          .item-part
+            .item-private.i.fas.fa-lock
+            .item-text class_level1
+            .item-view.i.far.fa-eye-slash.show
+            .item-status.i.fas.fa-sign-out-alt.show
+          .empty-part
+          .header-part 채널(1)
+          .item-part
+            .item-private.i.fas.fa-lock
+            .item-text general
+            .item-view.i.far.fa-eye-slash.show
+            .item-status.i.fas.fa-sign-out-alt.show
+        .left-footer TheTheChat
+      .main-part
+        .main-header
+          .i.far.fa-star
+          .i.fas.fa-lock
+          .header-text class_level1
 
-        .chat-sender
-          .sender-group
-            i.material-icons.emoticon-adder insert_emoticon
-            textarea.message-content
-            i.material-icons.file-adder attachment
-            i.material-icons.file-adder mic
-            i.material-icons.file-adder videocam
+        .main-chatting
+          .chat-date
+            .date-line
+            .date-text 2018년 5월 25일
+            .date-line
 
 
-      .function-display
-        i.material-icons info
-        i.material-icons search
-        i.material-icons people
-        i.material-icons notifications
-        i.material-icons attachment
-        i.material-icons alternate_email
-        i.material-icons star
-        i.material-icons bookmark
+          .chat-content
+            .chat-image-zone
+              .chat-image JH
+              .i.fas.fa-cog.display-none
+            .chat
+              .chat-profile-content
+                .profile-name sooojung.lee
+                .profile-owner-content
+                  .owner-text.admin Admin
+                  .owner-text.owner Owner
+                .profile-date 오후 1시 42분
+                .i.fas.fa-cog
+              .chat-text-content sdfsdfsdf sdfsd<br>fsdf sdf sdas<br>da fsd asdfsdfsd<br>f sdf sdasda fsd a
+
+
+          .chat-content
+            .chat-image-zone
+              .chat-image
+              .i.fas.fa-cog
+            .chat
+              .chat-profile-content
+                .profile-name
+                .profile-owner-content
+                  .owner-text.admin
+                  .owner-text.owner
+                .profile-date
+                .i.fas.fa-cog.display-none
+              .chat-text-content sdfsdfsdf
+
+
+
+        .main-input
+          .main-input-content
+            .input-bar
+              .i.far.fa-grin
+              textarea(placeholder='메세지')
+            .content-bar
+              .contents
+                .i.fas.fa-paperclip
+                .i.fas.fa-microphone
+                .i.fas.fa-video
+              .empty-content
+      .right-side-bar
+        .icon.i.fas.fa-info-circle
+        .icon.i.fas.fa-search
+        .icon.i.fas.fa-users
+        .icon.i.fas.fa-bell
+        .icon.i.fas.fa-paperclip
+        .icon.i.fas.fa-at
+        .icon.i.fas.fa-star
+        .icon.i.fas.fa-thumbtack
+  script(src='/test.js')
+    //.wrapper
+    //  .empty-bar
+    //  .channel-display
+    //    .channel-header.first-color
+    //      .profile-image JH
+    //      .profile-name Jaejong Heo
+    //      .logout-button
+    //        .i.fas.fa-angle-down
+    //    .channel-option.first-color
+    //      .input-search
+    //        .i.fas.fa-search
+    //        input(placeholder="검색( CMD+K)")
+    //      .channel-adder +
+    //    .channel-body.first-color
+    //      .channel-group 즐겨찾기
+    //      .channel-item
+    //        .icon-type.icon.i.fas.fa-lock
+    //        .text 안녕
+    //        .icon-hide.icon.i.far.fa-eye-slash
+    //        .icon-quit.icon.i.fas.fa-sign-out-alt
+    //      .channel-item s
+    //      .channel-group 즐겨찾기
+    //      .channel-item a
+    //      .channel-item s
+    //      .channel-group 즐겨찾기
+    //      .channel-item a
+    //      .channel-item s
+    //    .channel-footer the.the.chat
+    //  .main-display
+    //  .function-display

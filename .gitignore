@@ -131,3 +131,7 @@ typings/
 
 .idea/
 .idea
+
+# firebase Initialize
+src/initializeFirebase.js
+dist/initializeFirebase.js
