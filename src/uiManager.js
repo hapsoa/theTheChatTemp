@@ -8,4 +8,17 @@ const uiManager = new function() {
         $progressWindow.addClass('display-none');
     });
 
+    firebaseApi.setSignOutListener(() => {
+        window.location.replace("/login");
+    });
+    firebaseApi.setListener('onAuthStateChangedNotHavingUser', () => {
+        window.location.replace("/login");
+    });
+
+    const $logOutButton = $('#logout-button');
+    $logOutButton.on('click', function() {
+        console.log('logout');
+        firebaseApi.signOut();
+
+    });
 };

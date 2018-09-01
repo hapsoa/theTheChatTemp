@@ -1,12 +1,14 @@
 <- uiManager ->
+logOutButton
+
 
 <- loginUi ->
 signInButton
 
-
 <- firebaseApi ->
 onAuthStateChanged()
 signIn()
+signOut()
 
 <- firebaseDB ->
 getUser()

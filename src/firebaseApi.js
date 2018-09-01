@@ -5,6 +5,17 @@ const firebaseApi = new function () {
     this.setOnAuthStateChangedListener = (listener) => {
         onAuthChangedListener = listener;
     };
+    let onAuthChangedListenerNoUser = null;
+    this.setOnAuthStateChangedListenerNoUser = (listener) => {
+        onAuthChangedListenerNoUser = listener;
+    };
+
+    const listener = {
+        onAuthStateChangedNotHavingUser: null
+    };
+    this.setListener = (listenerName, listenerFunction) => {
+        listener[listenerName] = listenerFunction;
+    };
 
     firebase.auth().onAuthStateChanged(function (user) {
         console.log(user);
@@ -26,6 +37,8 @@ const firebaseApi = new function () {
         } else {
             // User is signed out.
             // ...
+            if (listener.onAuthStateChangedNotHavingUser !== null)
+                listener.onAuthStateChangedNotHavingUser();
         }
     });
 
@@ -52,6 +65,21 @@ const firebaseApi = new function () {
             console.log(error.message);
         }
     };
+
+    let signOutListner = null;
+    this.setSignOutListener = (listener) => {
+        signOutListner = listener;
+    };
+    this.signOut = () => {
+        firebase.auth().signOut().then(function() {
+            // Sign-out successful.
+            if(signOutListner !== null)
+                signOutListner();
+        }).catch(function(error) {
+            // An error happened.
+            console.log(error);
+        });
+    }
 };
 
 const firebaseDb = new function () {

@@ -3,14 +3,19 @@ body {
   font-family: 'Roboto', sans-serif; }
 
 .progress-window {
-  margin: 50px auto;
-  width: 150px; }
+  margin: auto;
+  width: 150px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; }
   .progress-window > h1 {
     text-align: center;
     font-size: 2.5em;
     margin-bottom: 1em;
     font-weight: 300;
-    color: #8E8E8E; }
+    color: #8E8E8E;
+    margin-top: 0; }
 
 #load {
   width: 150px;

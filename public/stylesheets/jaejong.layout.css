@@ -1,17 +1,22 @@
 * {
   box-sizing: border-box; }
 
+html {
+  height: 100%; }
+
+body {
+  height: 100%; }
+
 body {
   padding: 0;
-  margin: 0;
-  height: 100vh; }
+  margin: 0; }
 
 .display-none {
   display: none !important; }
 
 .chat-wrapper {
   width: 100%;
-  height: inherit;
+  height: 100vh;
   display: flex; }
   .chat-wrapper .empty-bar {
     width: 80px;

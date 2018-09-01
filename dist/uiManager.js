@@ -9,4 +9,17 @@ var uiManager = new function () {
         $thetheChatWindow.removeClass('display-none');
         $progressWindow.addClass('display-none');
     });
+
+    firebaseApi.setSignOutListener(function () {
+        window.location.replace("/login");
+    });
+    firebaseApi.setListener('onAuthStateChangedNotHavingUser', function () {
+        window.location.replace("/login");
+    });
+
+    var $logOutButton = $('#logout-button');
+    $logOutButton.on('click', function () {
+        console.log('logout');
+        firebaseApi.signOut();
+    });
 }();
