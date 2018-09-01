@@ -4,16 +4,17 @@ var uiManager = new function () {
 
     var $thetheChatWindow = $('.chat-wrapper');
     var $progressWindow = $('.progress-window');
-    firebaseApi.setOnAuthStateChangedListener(function () {
+
+    firebaseApi.setListener('onAuthStateChangedHavingUser', function () {
         // 처음에는 프로그레스 창 -> 더더챗창으로
         $thetheChatWindow.removeClass('display-none');
         $progressWindow.addClass('display-none');
     });
-
-    firebaseApi.setSignOutListener(function () {
+    firebaseApi.setListener('onAuthStateChangedNotHavingUser', function () {
         window.location.replace("/login");
     });
-    firebaseApi.setListener('onAuthStateChangedNotHavingUser', function () {
+
+    firebaseApi.setListener('signOut', function () {
         window.location.replace("/login");
     });
 
@@ -22,4 +23,7 @@ var uiManager = new function () {
         console.log('logout');
         firebaseApi.signOut();
     });
+
+    var $chattingBox = $('textarea');
+    $chattingBox.on('keyup', function (e) {});
 }();

@@ -7,17 +7,10 @@ var firebaseApi = new function () {
 
     var provider = new firebase.auth.GoogleAuthProvider();
 
-    var onAuthChangedListener = null;
-    this.setOnAuthStateChangedListener = function (listener) {
-        onAuthChangedListener = listener;
-    };
-    var onAuthChangedListenerNoUser = null;
-    this.setOnAuthStateChangedListenerNoUser = function (listener) {
-        onAuthChangedListenerNoUser = listener;
-    };
-
     var listener = {
-        onAuthStateChangedNotHavingUser: null
+        onAuthStateChangedHavingUser: null,
+        onAuthStateChangedNotHavingUser: null,
+        signOut: null
     };
     this.setListener = function (listenerName, listenerFunction) {
         listener[listenerName] = listenerFunction;
@@ -36,8 +29,8 @@ var firebaseApi = new function () {
             var providerData = user.providerData;
             // ...
             // 더더챗으로 redirect를 시켜준다.
-            console.log('yes', onAuthChangedListener);
-            if (onAuthChangedListener !== null) onAuthChangedListener();
+
+            if (listener.onAuthStateChangedHavingUser !== null) listener.onAuthStateChangedHavingUser();
         } else {
             // User is signed out.
             // ...
@@ -95,14 +88,10 @@ var firebaseApi = new function () {
         }, _callee, _this, [[0, 13]]);
     }));
 
-    var signOutListner = null;
-    this.setSignOutListener = function (listener) {
-        signOutListner = listener;
-    };
     this.signOut = function () {
         firebase.auth().signOut().then(function () {
             // Sign-out successful.
-            if (signOutListner !== null) signOutListner();
+            if (listener.signOut !== null) listener.signOut();
         }).catch(function (error) {
             // An error happened.
             console.log(error);

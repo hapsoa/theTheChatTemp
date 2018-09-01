@@ -1,14 +1,17 @@
 <- uiManager ->
-logOutButton
-
+$logOutButton
+$chattingZone
 
 <- loginUi ->
-signInButton
+$signInButton
 
 <- firebaseApi ->
 onAuthStateChanged()
 signIn()
 signOut()
+
+listener
+setListener()
 
 <- firebaseDB ->
 getUser()

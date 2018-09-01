@@ -13,7 +13,7 @@ var loginUiManager = new function () {
         $progressWindow.removeClass('display-none');
     });
 
-    firebaseApi.setOnAuthStateChangedListener(function () {
+    firebaseApi.setListener('onAuthStateChangedHavingUser', function () {
         window.location.replace("/jaejong");
     });
 }();
