@@ -1,6 +1,5 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,300);
 body {
-  background: #f1f1f1;
   font-family: 'Roboto', sans-serif; }
 
 .progress-window {
@@ -38,4 +37,4 @@ body {
   100% {
     stroke-dashoffset: -600; } }
 
-/*# sourceMappingURL=temp.css.map */
+/*# sourceMappingURL=progress.css.map */

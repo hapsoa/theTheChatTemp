@@ -11,9 +11,9 @@ var loginUiManager = new function () {
         firebaseApi.signIn();
         $loginWindow.addClass('display-none');
         $progressWindow.removeClass('display-none');
+    });
 
-        firebaseApi.setOnAuthStateChangedListener(function () {
-            window.location.replace("/jaejong");
-        });
+    firebaseApi.setOnAuthStateChangedListener(function () {
+        window.location.replace("/jaejong");
     });
 }();

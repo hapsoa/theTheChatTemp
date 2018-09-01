@@ -15,10 +15,11 @@ html
 
     link(rel='stylesheet', href='/stylesheets/jaejong.layout.css')
     link(rel='stylesheet', href='/stylesheets/jaejong.color.css')
+    link(rel='stylesheet', href='/stylesheets/progress.css')
     link(rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous")
 
   body
-    .chat-wrapper
+    .chat-wrapper.display-none
       .empty-bar
       .left-side-bar
         .left-header
@@ -111,7 +112,13 @@ html
         .icon.i.fas.fa-at
         .icon.i.fas.fa-star
         .icon.i.fas.fa-thumbtack
-  script(src='/test.js')
+
+    .progress-window
+      h1 Loading
+      svg#load(x='0px', y='0px', viewBox='0 0 150 150')
+        circle#loading-inner(cx='75', cy='75', r='60')
+
+  script(src='/chatExtender.js')
   script(src="/initializeFirebase.js")
   script(src="/firebaseApi.js")
     //.wrapper

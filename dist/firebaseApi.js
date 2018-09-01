@@ -25,6 +25,7 @@ var firebaseApi = new function () {
             var providerData = user.providerData;
             // ...
             // 더더챗으로 redirect를 시켜준다.
+            console.log('yes', onAuthChangedListener);
             if (onAuthChangedListener !== null) onAuthChangedListener();
         } else {
             // User is signed out.

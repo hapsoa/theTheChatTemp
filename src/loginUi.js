@@ -6,13 +6,13 @@ const loginUiManager = new function() {
     $signInButton.on('click', function() {
         console.log('sign in button');
 
+
         firebaseApi.signIn();
         $loginWindow.addClass('display-none');
         $progressWindow.removeClass('display-none');
-
-        firebaseApi.setOnAuthStateChangedListener(() => {
-            window.location.replace("/jaejong");
-        });
     });
 
+    firebaseApi.setOnAuthStateChangedListener(() => {
+        window.location.replace("/jaejong");
+    });
 };
