@@ -1,6 +1,7 @@
 <- uiManager ->
 $logOutButton
-$chattingZone
+$chattingBox
+ChatLog
 
 <- loginUi ->
 $signInButton

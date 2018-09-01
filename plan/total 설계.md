@@ -13,3 +13,5 @@
 layout,font, color
 
 inherit을 많이 쓰고
+
+
