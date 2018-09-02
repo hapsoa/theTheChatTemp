@@ -10,6 +10,8 @@ var firebaseApi = new function () {
     var listener = {
         onAuthStateChangedHavingUser: null,
         onAuthStateChangedNotHavingUser: null,
+        signInHead: null,
+        signInTail: null,
         signOut: null
     };
     this.setListener = function (listenerName, listenerFunction) {
@@ -19,10 +21,11 @@ var firebaseApi = new function () {
     firebase.auth().onAuthStateChanged(function (user) {
         console.log(user);
         if (user) {
+            // const userInDatabase = await firebaseDb.readUser(user.uid);
+
             if (listener.onAuthStateChangedHavingUser !== null) listener.onAuthStateChangedHavingUser(user);
         } else {
             // User is signed out.
-            // ...
             if (listener.onAuthStateChangedNotHavingUser !== null) listener.onAuthStateChangedNotHavingUser();
         }
     });
@@ -45,36 +48,48 @@ var firebaseApi = new function () {
                         result = _context.sent;
 
                         // The signed-in user info.
+                        if (listener.signInHead !== null) listener.signInHead();
                         user = result.user;
-                        _context.next = 9;
+                        _context.next = 10;
                         return firebaseDb.readUser(user.uid);
 
-                    case 9:
+                    case 10:
                         readUser = _context.sent;
 
-                        if (readUser) {
-                            // 로그인 한다.
-                            firebaseDb.updateUser(user);
-                        } else {
-                            // 계정을 새로 만든다.
-                            firebaseDb.createUser(user);
+                        if (!readUser) {
+                            _context.next = 16;
+                            break;
                         }
-                        _context.next = 17;
+
+                        _context.next = 14;
+                        return firebaseDb.updateUser(user);
+
+                    case 14:
+                        _context.next = 18;
                         break;
 
-                    case 13:
-                        _context.prev = 13;
+                    case 16:
+                        _context.next = 18;
+                        return firebaseDb.createUser(user);
+
+                    case 18:
+                        if (listener.signInTail !== null) listener.signInTail();
+                        _context.next = 25;
+                        break;
+
+                    case 21:
+                        _context.prev = 21;
                         _context.t0 = _context["catch"](0);
 
                         console.log(_context.t0.code);
                         console.log(_context.t0.message);
 
-                    case 17:
+                    case 25:
                     case "end":
                         return _context.stop();
                 }
             }
-        }, _callee, _this, [[0, 13]]);
+        }, _callee, _this, [[0, 21]]);
     }));
 
     this.signOut = function () {
@@ -85,6 +100,18 @@ var firebaseApi = new function () {
             // An error happened.
             console.log(error);
         });
+    };
+
+    this.uploadFile = function () {};
+
+    this.readAllChatLogs = function (channelName) {
+        // db.collection(channelName).get().then(function(querySnapshot) {
+        //     querySnapshot.forEach(function(doc) {
+        //         // doc.data() is never undefined for query doc snapshots
+        //         console.log(doc.id, " => ", doc.data());
+        //     });
+        // });
+
     };
 }();
 
@@ -147,18 +174,46 @@ var firebaseDb = new function () {
         };
     }();
 
-    this.createUser = function (user) {
-        db.collection("user").doc(user.uid).set({
-            uid: user.uid,
-            displayName: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL
-        }).then(function () {
-            console.log("This user is created");
-        }).catch(function (error) {
-            console.error("Error writing document: ", error);
-        });
-    };
+    this.createUser = function () {
+        var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(user) {
+            return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                while (1) {
+                    switch (_context3.prev = _context3.next) {
+                        case 0:
+                            _context3.prev = 0;
+                            _context3.next = 3;
+                            return db.collection("user").doc(user.uid).set({
+                                uid: user.uid,
+                                displayName: user.displayName,
+                                email: user.email,
+                                photoURL: user.photoURL,
+                                lastSignedInDate: new Date(),
+                                creationDate: new Date()
+                            });
+
+                        case 3:
+                            console.log("This user is created");
+                            _context3.next = 9;
+                            break;
+
+                        case 6:
+                            _context3.prev = 6;
+                            _context3.t0 = _context3["catch"](0);
+
+                            console.error("Error writing document: ", _context3.t0);
+
+                        case 9:
+                        case "end":
+                            return _context3.stop();
+                    }
+                }
+            }, _callee3, _this2, [[0, 6]]);
+        }));
+
+        return function (_x2) {
+            return _ref3.apply(this, arguments);
+        };
+    }();
 
     this.updateUser = function (user) {
         var userRef = db.collection("user").doc(user.uid);
@@ -166,12 +221,30 @@ var firebaseDb = new function () {
         return userRef.update({
             displayName: user.displayName,
             email: user.email,
-            photoURL: user.photoURL
+            photoURL: user.photoURL,
+            lastSignedInDate: new Date()
         }).then(function () {
             console.log("This user is updated");
         }).catch(function (error) {
             // The document probably doesn't exist.
             console.error("Error updating document: ", error);
+        });
+    };
+
+    this.uploadChatLog = function (chatData) {
+        db.collection("channelLogs").add(chatData).then(function (docRef) {
+            console.log("Document written with ID: ", docRef.id);
+        }).catch(function (error) {
+            console.error("Error adding document: ", error);
+        });
+    };
+
+    this.readAllChatLogs = function (channelName) {
+        db.collection(channelName).get().then(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
+                // doc.data() is never undefined for query doc snapshots
+                console.log(doc.id, " => ", doc.data());
+            });
         });
     };
 }();

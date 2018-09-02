@@ -4,6 +4,8 @@ const firebaseApi = new function () {
     const listener = {
         onAuthStateChangedHavingUser: null,
         onAuthStateChangedNotHavingUser: null,
+        signInHead: null,
+        signInTail: null,
         signOut: null
     };
     this.setListener = (listenerName, listenerFunction) => {
@@ -13,12 +15,13 @@ const firebaseApi = new function () {
     firebase.auth().onAuthStateChanged(function (user) {
         console.log(user);
         if (user) {
+            // const userInDatabase = await firebaseDb.readUser(user.uid);
+
             if (listener.onAuthStateChangedHavingUser !== null)
                 listener.onAuthStateChangedHavingUser(user);
 
         } else {
             // User is signed out.
-            // ...
             if (listener.onAuthStateChangedNotHavingUser !== null)
                 listener.onAuthStateChangedNotHavingUser();
         }
@@ -30,16 +33,20 @@ const firebaseApi = new function () {
 
             const result = await firebase.auth().signInWithPopup(provider);
             // The signed-in user info.
+            if (listener.signInHead !== null)
+                listener.signInHead();
             const user = result.user;
 
             const readUser = await firebaseDb.readUser(user.uid);
             if (readUser) {
                 // 로그인 한다.
-                firebaseDb.updateUser(user);
+                await firebaseDb.updateUser(user);
             } else {
                 // 계정을 새로 만든다.
-                firebaseDb.createUser(user);
+                await firebaseDb.createUser(user);
             }
+            if (listener.signInTail !== null)
+                listener.signInTail();
         }
         catch (error) {
             console.log(error.code);
@@ -48,15 +55,30 @@ const firebaseApi = new function () {
     };
 
     this.signOut = () => {
-        firebase.auth().signOut().then(function() {
+        firebase.auth().signOut().then(function () {
             // Sign-out successful.
-            if(listener.signOut !== null)
+            if (listener.signOut !== null)
                 listener.signOut();
-        }).catch(function(error) {
+        }).catch(function (error) {
             // An error happened.
             console.log(error);
         });
-    }
+    };
+
+    this.uploadFile = () => {
+
+    };
+
+    this.readAllChatLogs = (channelName) => {
+        // db.collection(channelName).get().then(function(querySnapshot) {
+        //     querySnapshot.forEach(function(doc) {
+        //         // doc.data() is never undefined for query doc snapshots
+        //         console.log(doc.id, " => ", doc.data());
+        //     });
+        // });
+
+    };
+
 };
 
 const firebaseDb = new function () {
@@ -83,19 +105,21 @@ const firebaseDb = new function () {
         }
     };
 
-    this.createUser = (user) => {
-        db.collection("user").doc(user.uid).set({
-            uid: user.uid,
-            displayName: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL
-        })
-            .then(function () {
-                console.log("This user is created");
-            })
-            .catch(function (error) {
-                console.error("Error writing document: ", error);
+    this.createUser = async (user) => {
+        try {
+            await db.collection("user").doc(user.uid).set({
+                uid: user.uid,
+                displayName: user.displayName,
+                email: user.email,
+                photoURL: user.photoURL,
+                lastSignedInDate: new Date(),
+                creationDate: new Date()
             });
+            console.log("This user is created");
+        }
+        catch (error) {
+            console.error("Error writing document: ", error);
+        }
     };
 
     this.updateUser = (user) => {
@@ -104,7 +128,8 @@ const firebaseDb = new function () {
         return userRef.update({
             displayName: user.displayName,
             email: user.email,
-            photoURL: user.photoURL
+            photoURL: user.photoURL,
+            lastSignedInDate: new Date()
         })
             .then(function () {
                 console.log("This user is updated");
@@ -113,7 +138,27 @@ const firebaseDb = new function () {
                 // The document probably doesn't exist.
                 console.error("Error updating document: ", error);
             });
-    }
+    };
+
+    this.uploadChatLog = (chatData) => {
+        db.collection("channelLogs").add(chatData)
+            .then(function(docRef) {
+                console.log("Document written with ID: ", docRef.id);
+            })
+            .catch(function(error) {
+                console.error("Error adding document: ", error);
+            });
+    };
+
+    this.readAllChatLogs = (channelName) => {
+        db.collection(channelName).get().then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                // doc.data() is never undefined for query doc snapshots
+                console.log(doc.id, " => ", doc.data());
+            });
+        });
+
+    };
 
 };
 

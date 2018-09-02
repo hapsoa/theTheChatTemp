@@ -5,6 +5,7 @@ ChatLog
 
 <- loginUi ->
 $signInButton
+ChatLog(logData)
 
 <- firebaseApi ->
 onAuthStateChanged()
@@ -23,13 +24,32 @@ user: {
         uid: "",
         displayName: "",
         email: "",
-        photoURL: ""
+        photoURL: "",
+        lastSignedInDate: "",
+        channels: {
+            channelName1: "",
+            channelName2: ""
+        },
+        personalRoom: "",
+        creationDate: ""
     },
     uid2: {
 
     }
 }
 
+channelLogs: {
+    randomDocName1: {
+        userInitial: "",
+        userName: "",
+        time: "",
+        type: "file/image" or "message",
+        content: ""
+    },
+    randomDocName1 {
+
+    }
+}
 
 <- firebaseStorage ->
 
