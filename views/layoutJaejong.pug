@@ -65,7 +65,7 @@ html
 
           .chat-content
             .chat-image-zone
-              .chat-image SL
+              .chat-image.orange SL
               .i.fas.fa-cog.display-none
             .chat
               .chat-profile-content
@@ -101,7 +101,8 @@ html
               textarea(placeholder='메세지')
             .content-bar
               .contents
-                .i.fas.fa-paperclip
+                .i.fas.fa-paperclip#upload-file-button
+                  input.display-none#hidden-upload-button(type="file" multiple)
                 .i.fas.fa-microphone
                 .i.fas.fa-video
               .empty-content

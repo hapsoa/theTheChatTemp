@@ -40,6 +40,7 @@ user: {
 
 channelLogs: {
     randomDocName1: {
+        uid: "",
         userInitial: "",
         userName: "",
         time: "",
@@ -47,7 +48,13 @@ channelLogs: {
         content: ""
     },
     randomDocName1 {
-
+        uid: "",
+        userInitial: "",
+        userName: "",
+        time: "",
+        type: "file/image" or "message",
+        fileName: "",
+        content: ""
     }
 }
 

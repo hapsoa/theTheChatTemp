@@ -21,6 +21,7 @@ const uiManager = new function () {
             $progressWindow.addClass('display-none');
 
             userData = {
+                uid: user.uid,
                 userInitial: getUserInitial(userInDatabase.displayName),
                 userName: getUserName(userInDatabase.displayName)
             };
@@ -81,17 +82,17 @@ const uiManager = new function () {
     /**
      * Initialize Chat logs
      */
-    // 데이터베이스에서 채팅로그들을 모두읽어와서, 업데이트 한다.
+        // 데이터베이스에서 채팅로그들을 모두읽어와서, 업데이트 한다.
     const initializeChatLogs = async () => {
-        const chatLogsData = await firebaseDb.readAllChatLogs('channelLogs');
-        // console.log(chatLogsData);
+            const chatLogsData = await firebaseDb.readAllChatLogs('channelLogs');
+            // console.log(chatLogsData);
 
-        _.forOwn(chatLogsData, (value, key) => {
-            console.log(value);
-            chatLogs.push(new ChatLog(value));
-        })
+            _.forOwn(chatLogsData, (value, key) => {
+                console.log(value);
+                chatLogs.push(new ChatLog(value));
+            })
 
-    };
+        };
     initializeChatLogs();
 
     /**
@@ -111,11 +112,12 @@ const uiManager = new function () {
         if (e.keyCode === 13) {
             if ($chatInputBox.val().trim().length !== 0) {
                 // 채팅이 입력이 된다.
-                const date = new Date().getTime();
+                const time = new Date().getTime();
                 const chatData = {
+                    uid: userData.uid,
                     userInitial: userData.userInitial,
                     userName: userData.userName,
-                    date: date,
+                    time: time,
                     type: "message",
                     content: $chatInputBox.val()
                 };
@@ -137,30 +139,18 @@ const uiManager = new function () {
     const ChatLog = function (chatData) {
         const $chatLogsZone = $('.main-chatting');
 
-        const date = new Date(chatData.date);
-
-        if (chatLogs.length > 0)
-            console.log(chatLogs[chatLogs.length - 1].getMinutes());
-        console.log(date.getMinutes());
-        // 이전 채팅과 1분이상 차이가 났을 때, 이니셜과 이름을 입력해 준다
-        if () {
-
-        }
-
-        const currentUser = firebase.auth().currentUser;
-        const userInitial = getUserInitial(currentUser.displayName);
-        const userName = getUserName(currentUser.displayName);
+        const date = new Date(chatData.time);
         const displayTime = getChatLogTime(date);
 
         const $template = $(`
         <div class="chat-content">
             <div class="chat-image-zone">
-                <div class="chat-image">${userInitial}</div>
+                <div class="chat-image orange">${chatData.userInitial}</div>
                 <div class="i fas fa-cog display-none"></div>
             </div>
             <div class="chat">
                 <div class="chat-profile-content">
-                    <div class="profile-name">${userName}</div>
+                    <div class="profile-name">${chatData.userName}</div>
                     <div class="profile-owner-content">
                         <div class="owner-text admin"></div>
                         <div class="owner-text owner"></div>
@@ -173,6 +163,25 @@ const uiManager = new function () {
         </div>
         `);
 
+        if (chatLogs.length > 0)
+            console.log(chatLogs[chatLogs.length - 1].getMinutes());
+        console.log(date.getMinutes());
+        // 같은 유저의 채팅로그이고, 시간이 같을 때, 프로필 정보들을 지워주고 화면에 보여준다.
+
+        if (chatLogs.length > 0) {
+            let frontChatLog = chatLogs[chatLogs.length - 1];
+
+            if (chatData.uid === frontChatLog.getUser() &&
+                date.getMinutes() - frontChatLog.getMinutes() === 0) {
+                console.log(true);
+                $template.find('.chat-image').text('');
+                $template.find('.profile-name').text('');
+                $template.find('.profile-date').text('');
+                $template.find('.chat-image-zone > .fa-cog').removeClass('display-none');
+                $template.find('.chat-profile-content > .fa-cog').remove();
+            }
+        }
+
 
         $chatLogsZone.append($template);
 
@@ -180,9 +189,71 @@ const uiManager = new function () {
         this.getMinutes = () => {
             return date.getMinutes();
         };
-        this.getUser
+        this.getUser = () => {
+            return chatData.uid;
+        };
 
     };
+
+
+    /**
+     * Upload File Button
+     */
+    const $uploadFileButton = $('#upload-file-button');
+    const $hiddenUploadButton = $('#hidden-upload-button');
+    $uploadFileButton.on('click', function () {
+        $hiddenUploadButton.trigger('click');
+    });
+
+    $hiddenUploadButton.on('click', function (e) {
+        e.stopPropagation();
+    });
+    $hiddenUploadButton.on('change', function () {
+        const time = new Date().getTime();
+        const chatData = {
+            uid: userData.uid,
+            userInitial: userData.userInitial,
+            userName: userData.userName,
+            time: time,
+            type: "",
+            fileName: "",
+            content: ""
+        };
+
+        const selectedFiles = document.getElementById('hidden-upload-button').files;
+        _.forEach(selectedFiles, function (file) {
+            // 파일들을 데이터베이스에 저장한다.
+            // 파일들을 클라우드 저장소에 저장한다.
+            chatData.type = file.type;
+            chatData.fileName = file.name;
+
+            firebaseApi.uploadFile(chatData, file);
+            cardManager.cardList.push(new Card(file));
+        });
+    });
+
+    // /**
+    //  * File upload button
+    //  */
+    // $uploadButton.on('click', function () {
+    //     $('input[type="file"]').trigger('click');
+    // });
+    // const $internalUploadButton = $('input[type="file"]');
+    // $internalUploadButton.on('click', function (e) {
+    //     e.stopPropagation();
+    // });
+    // $internalUploadButton.on('change', function () {
+    //     const currentUser = firebase.auth().currentUser;
+    //     const selectedFiles = document.getElementById('hiddenUploadButton').files;
+    //
+    //     _.forEach(selectedFiles, function (file) {
+    //         // 파일들을 데이터베이스에 저장한다.
+    //         // 파일들을 클라우드 저장소에 저장한다.
+    //         firebaseApi.writeFile(currentUser, file);
+    //         cardManager.cardList.push(new Card(file));
+    //     });
+    //
+    // });
 
 
 };

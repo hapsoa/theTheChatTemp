@@ -195,7 +195,7 @@ body {
             border-radius: 5px;
             line-height: 40px;
             max-height: 40px;
-            border: solid 1px; }
+            color: white; }
             .chat-wrapper .main-part .main-chatting .chat-content .chat-image-zone .chat-image.orange {
               background: #FDB316; }
           .chat-wrapper .main-part .main-chatting .chat-content .chat-image-zone .i.fas.fa-cog {

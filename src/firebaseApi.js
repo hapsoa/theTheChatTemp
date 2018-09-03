@@ -64,13 +64,14 @@ const firebaseApi = new function () {
         });
     };
 
-    this.uploadFile = () => {
-
-    };
-
     // this.readAllChatLogs = (channelName) => {
     //     firebaseDb.readAllChatLogs(channelName);
     // };
+
+    this.uploadFile = (chatData, file) => {
+        firebaseDb.uploadChatLog(chatData);
+        firebaseStorage.uploadFile(chatData.uid, file);
+    };
 
 };
 
@@ -134,12 +135,12 @@ const firebaseDb = new function () {
     };
 
     this.uploadChatLog = (chatData) => {
-        const docName = String(chatData.date);
+        const docName = String(chatData.time);
         db.collection("channelLogs").doc(docName).set(chatData)
-            .then(function() {
+            .then(function () {
                 console.log("Document successfully written! in database");
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error("Error writing document: ", error);
             });
     };
@@ -156,10 +157,24 @@ const firebaseDb = new function () {
         return chatLogsData;
     };
 
+
 };
 
 const firebaseStorage = new function () {
+    const storage = firebase.storage();
+    const storageRef = storage.ref();
 
+    this.uploadFile = (uid, file) => {
+        // ref를 설정하고,
+        let fileRef;
+
+        fileRef = storageRef.child(`${uid}/${file.name}`);
+
+        // 저장을 한다.
+        fileRef.put(file).then(function (snapshot) {
+            console.log('Uploaded a blob or file!');
+        });
+    };
 };
 
 
