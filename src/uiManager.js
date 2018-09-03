@@ -10,9 +10,10 @@ const uiManager = new function () {
     /**
      * firebaseApi Listeners
      */
-    firebaseApi.setListener('onAuthStateChangedHavingUser', (user) => {
+    firebaseApi.setListener('onAuthStateChangedHavingUser', async (user) => {
         // 유저 정보를 가져오고, 데이터베이스에 있으면 아래 로직
         // 없으면 login 화면으로 이동
+        const userInDatabase = await firebaseDb.readUser(user.uid);
         console.log(user);
         if (user) {
             // 프로그레스 창 -> 더더챗창 으로
@@ -20,8 +21,8 @@ const uiManager = new function () {
             $progressWindow.addClass('display-none');
 
             userData = {
-                userInitial: getUserInitial(user.displayName),
-                userName: getUserName(user.displayName)
+                userInitial: getUserInitial(userInDatabase.displayName),
+                userName: getUserName(userInDatabase.displayName)
             };
             // 사이드바 header 이미지 이니셜 텍스트
             $thetheChatWindow.find('.header-image').text(userData.userInitial);
@@ -48,7 +49,13 @@ const uiManager = new function () {
         const initialArray = _.map(userDisplayName.split(' '), (element) => {
             return element[0].toUpperCase();
         });
-        return initialArray[0] + initialArray[1];
+
+        let initial = '';
+        _.forEach(initialArray, (element) => {
+            initial += element[0];
+        });
+
+        return initial;
     };
     // 사이드바 header 이름 텍스트, 채팅 이름
     const getUserName = (userDisplayName) => {

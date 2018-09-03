@@ -1,6 +1,9 @@
 'use strict';
 
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
 var uiManager = new function () {
+    var _this = this;
 
     var $thetheChatWindow = $('.chat-wrapper');
     var $progressWindow = $('.progress-window');
@@ -12,32 +15,54 @@ var uiManager = new function () {
     /**
      * firebaseApi Listeners
      */
-    firebaseApi.setListener('onAuthStateChangedHavingUser', function (user) {
-        // 유저 정보를 가져오고, 데이터베이스에 있으면 아래 로직
-        // 없으면 login 화면으로 이동
-        console.log(user);
-        if (user) {
-            // 프로그레스 창 -> 더더챗창 으로
-            $thetheChatWindow.removeClass('display-none');
-            $progressWindow.addClass('display-none');
+    firebaseApi.setListener('onAuthStateChangedHavingUser', function () {
+        var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(user) {
+            var userInDatabase;
+            return regeneratorRuntime.wrap(function _callee$(_context) {
+                while (1) {
+                    switch (_context.prev = _context.next) {
+                        case 0:
+                            _context.next = 2;
+                            return firebaseDb.readUser(user.uid);
 
-            userData = {
-                userInitial: getUserInitial(user.displayName),
-                userName: getUserName(user.displayName)
-            };
-            // 사이드바 header 이미지 이니셜 텍스트
-            $thetheChatWindow.find('.header-image').text(userData.userInitial);
-            // const userInitialName = getUserInitial(user.displayName);
-            // $thetheChatWindow.find('.header-image').text(userInitialName);
+                        case 2:
+                            userInDatabase = _context.sent;
 
-            // 사이드바 header 이름 텍스트
-            $thetheChatWindow.find('.header-name').text(userData.userName);
-            // const userName = getUserName(user.displayName);
-            // $thetheChatWindow.find('.header-name').text(userName);
-        } else {
-            window.location.replace("/login");
-        }
-    });
+                            console.log(user);
+                            if (user) {
+                                // 프로그레스 창 -> 더더챗창 으로
+                                $thetheChatWindow.removeClass('display-none');
+                                $progressWindow.addClass('display-none');
+
+                                userData = {
+                                    userInitial: getUserInitial(userInDatabase.displayName),
+                                    userName: getUserName(userInDatabase.displayName)
+                                };
+                                // 사이드바 header 이미지 이니셜 텍스트
+                                $thetheChatWindow.find('.header-image').text(userData.userInitial);
+                                // const userInitialName = getUserInitial(user.displayName);
+                                // $thetheChatWindow.find('.header-image').text(userInitialName);
+
+                                // 사이드바 header 이름 텍스트
+                                $thetheChatWindow.find('.header-name').text(userData.userName);
+                                // const userName = getUserName(user.displayName);
+                                // $thetheChatWindow.find('.header-name').text(userName);
+                            } else {
+                                window.location.replace("/login");
+                            }
+
+                        case 5:
+                        case 'end':
+                            return _context.stop();
+                    }
+                }
+            }, _callee, _this);
+        }));
+
+        return function (_x) {
+            return _ref.apply(this, arguments);
+        };
+    }());
 
     firebaseApi.setListener('onAuthStateChangedNotHavingUser', function () {
         window.location.replace("/login");
@@ -50,7 +75,13 @@ var uiManager = new function () {
         var initialArray = _.map(userDisplayName.split(' '), function (element) {
             return element[0].toUpperCase();
         });
-        return initialArray[0] + initialArray[1];
+
+        var initial = '';
+        _.forEach(initialArray, function (element) {
+            initial += element[0];
+        });
+
+        return initial;
     };
     // 사이드바 header 이름 텍스트, 채팅 이름
     var getUserName = function getUserName(userDisplayName) {
