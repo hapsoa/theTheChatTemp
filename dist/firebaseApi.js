@@ -22,7 +22,6 @@ var firebaseApi = new function () {
         console.log(user);
         if (user) {
             // const userInDatabase = await firebaseDb.readUser(user.uid);
-
             if (listener.onAuthStateChangedHavingUser !== null) listener.onAuthStateChangedHavingUser(user);
         } else {
             // User is signed out.
@@ -104,15 +103,9 @@ var firebaseApi = new function () {
 
     this.uploadFile = function () {};
 
-    this.readAllChatLogs = function (channelName) {
-        // db.collection(channelName).get().then(function(querySnapshot) {
-        //     querySnapshot.forEach(function(doc) {
-        //         // doc.data() is never undefined for query doc snapshots
-        //         console.log(doc.id, " => ", doc.data());
-        //     });
-        // });
-
-    };
+    // this.readAllChatLogs = (channelName) => {
+    //     firebaseDb.readAllChatLogs(channelName);
+    // };
 }();
 
 var firebaseDb = new function () {
@@ -139,34 +132,33 @@ var firebaseDb = new function () {
                             doc = _context2.sent;
 
                             if (!doc.exists) {
-                                _context2.next = 10;
+                                _context2.next = 9;
                                 break;
                             }
 
-                            console.log("Document data:", doc.data());
                             return _context2.abrupt("return", doc.data());
 
-                        case 10:
+                        case 9:
                             // doc.data() will be undefined in this case
                             console.log("not have user");
                             return _context2.abrupt("return", null);
 
-                        case 12:
-                            _context2.next = 17;
+                        case 11:
+                            _context2.next = 16;
                             break;
 
-                        case 14:
-                            _context2.prev = 14;
+                        case 13:
+                            _context2.prev = 13;
                             _context2.t0 = _context2["catch"](1);
 
                             console.log("Error getting document:", _context2.t0);
 
-                        case 17:
+                        case 16:
                         case "end":
                             return _context2.stop();
                     }
                 }
-            }, _callee2, _this2, [[1, 14]]);
+            }, _callee2, _this2, [[1, 13]]);
         }));
 
         return function (_x) {
@@ -232,21 +224,48 @@ var firebaseDb = new function () {
     };
 
     this.uploadChatLog = function (chatData) {
-        db.collection("channelLogs").add(chatData).then(function (docRef) {
-            console.log("Document written with ID: ", docRef.id);
+        var docName = String(chatData.date);
+        db.collection("channelLogs").doc(docName).set(chatData).then(function () {
+            console.log("Document successfully written! in database");
         }).catch(function (error) {
-            console.error("Error adding document: ", error);
+            console.error("Error writing document: ", error);
         });
     };
 
-    this.readAllChatLogs = function (channelName) {
-        db.collection(channelName).get().then(function (querySnapshot) {
-            querySnapshot.forEach(function (doc) {
-                // doc.data() is never undefined for query doc snapshots
-                console.log(doc.id, " => ", doc.data());
-            });
-        });
-    };
+    this.readAllChatLogs = function () {
+        var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(channelName) {
+            var chatLogsData, querySnapshot;
+            return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                while (1) {
+                    switch (_context4.prev = _context4.next) {
+                        case 0:
+                            chatLogsData = {};
+                            _context4.next = 3;
+                            return db.collection(channelName).get();
+
+                        case 3:
+                            querySnapshot = _context4.sent;
+
+                            querySnapshot.forEach(function (doc) {
+                                // doc.data() is never undefined for query doc snapshots
+                                // console.log(doc.id, " => ", doc.data());
+                                chatLogsData[doc.id] = doc.data();
+                            });
+
+                            return _context4.abrupt("return", chatLogsData);
+
+                        case 6:
+                        case "end":
+                            return _context4.stop();
+                    }
+                }
+            }, _callee4, _this2);
+        }));
+
+        return function (_x3) {
+            return _ref4.apply(this, arguments);
+        };
+    }();
 }();
 
 var firebaseStorage = new function () {}();

@@ -14,7 +14,7 @@ const uiManager = new function () {
         // 유저 정보를 가져오고, 데이터베이스에 있으면 아래 로직
         // 없으면 login 화면으로 이동
         const userInDatabase = await firebaseDb.readUser(user.uid);
-        console.log(user);
+        // console.log(user);
         if (user) {
             // 프로그레스 창 -> 더더챗창 으로
             $thetheChatWindow.removeClass('display-none');
@@ -64,6 +64,8 @@ const uiManager = new function () {
     // 채팅 로그 시간 구하기
     const getChatLogTime = (date) => {
         let displayTime;
+
+        // const date = new Date(millisecondsTime);
         let hours = date.getHours();
 
         if (hours <= 12) { // 0 ~ 12시
@@ -80,8 +82,15 @@ const uiManager = new function () {
      * Initialize Chat logs
      */
     // 데이터베이스에서 채팅로그들을 모두읽어와서, 업데이트 한다.
-    const initializeChatLogs = () => {
-        const chatLogsData = firebaseApi.readAllChatLogs('channelLogs');
+    const initializeChatLogs = async () => {
+        const chatLogsData = await firebaseDb.readAllChatLogs('channelLogs');
+        // console.log(chatLogsData);
+
+        _.forOwn(chatLogsData, (value, key) => {
+            console.log(value);
+            chatLogs.push(new ChatLog(value));
+        })
+
     };
     initializeChatLogs();
 
@@ -100,38 +109,48 @@ const uiManager = new function () {
     const $chatInputBox = $('textarea');
     $chatInputBox.on('keyup', function (e) {
         if (e.keyCode === 13) {
-            // 채팅이 입력이 된다.
-            const date = new Date();
-            const chatData = {
-                userInitial: userData.userInitial,
-                userName: userData.userName,
-                date: date,
-                type: "message",
-                content: $chatInputBox.val()
-            };
+            if ($chatInputBox.val().trim().length !== 0) {
+                // 채팅이 입력이 된다.
+                const date = new Date().getTime();
+                const chatData = {
+                    userInitial: userData.userInitial,
+                    userName: userData.userName,
+                    date: date,
+                    type: "message",
+                    content: $chatInputBox.val()
+                };
 
-            chatLogs.push(new ChatLog(chatData));
+                chatLogs.push(new ChatLog(chatData));
+                $chatInputBox.val('');
+
+                // 데이터베이스에 채팅입력정보를 보낸다
+                firebaseDb.uploadChatLog(chatData);
+            }
             $chatInputBox.val('');
-
-            // 데이터베이스에 채팅입력정보를 보낸다
-            firebaseDb.uploadChatLog(chatData);
         }
     });
 
-
+    /**
+     * 채팅 한줄 로그
+     * @param chatData : json 오브젝트
+     */
     const ChatLog = function (chatData) {
         const $chatLogsZone = $('.main-chatting');
 
+        const date = new Date(chatData.date);
+
         if (chatLogs.length > 0)
             console.log(chatLogs[chatLogs.length - 1].getMinutes());
-        console.log(chatData.date.getMinutes());
+        console.log(date.getMinutes());
         // 이전 채팅과 1분이상 차이가 났을 때, 이니셜과 이름을 입력해 준다
-        // if()
+        if () {
+
+        }
 
         const currentUser = firebase.auth().currentUser;
         const userInitial = getUserInitial(currentUser.displayName);
         const userName = getUserName(currentUser.displayName);
-        const displayTime = getChatLogTime(chatData.date);
+        const displayTime = getChatLogTime(date);
 
         const $template = $(`
         <div class="chat-content">
@@ -159,8 +178,10 @@ const uiManager = new function () {
 
 
         this.getMinutes = () => {
-            return chatData.date.getMinutes();
+            return date.getMinutes();
         };
+        this.getUser
+
     };
 
 

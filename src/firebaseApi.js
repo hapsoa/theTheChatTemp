@@ -16,7 +16,6 @@ const firebaseApi = new function () {
         console.log(user);
         if (user) {
             // const userInDatabase = await firebaseDb.readUser(user.uid);
-
             if (listener.onAuthStateChangedHavingUser !== null)
                 listener.onAuthStateChangedHavingUser(user);
 
@@ -69,15 +68,9 @@ const firebaseApi = new function () {
 
     };
 
-    this.readAllChatLogs = (channelName) => {
-        // db.collection(channelName).get().then(function(querySnapshot) {
-        //     querySnapshot.forEach(function(doc) {
-        //         // doc.data() is never undefined for query doc snapshots
-        //         console.log(doc.id, " => ", doc.data());
-        //     });
-        // });
-
-    };
+    // this.readAllChatLogs = (channelName) => {
+    //     firebaseDb.readAllChatLogs(channelName);
+    // };
 
 };
 
@@ -93,7 +86,7 @@ const firebaseDb = new function () {
             const doc = await docRef.get();
 
             if (doc.exists) {
-                console.log("Document data:", doc.data());
+                // console.log("Document data:", doc.data());
                 return doc.data();
             } else {
                 // doc.data() will be undefined in this case
@@ -141,23 +134,26 @@ const firebaseDb = new function () {
     };
 
     this.uploadChatLog = (chatData) => {
-        db.collection("channelLogs").add(chatData)
-            .then(function(docRef) {
-                console.log("Document written with ID: ", docRef.id);
+        const docName = String(chatData.date);
+        db.collection("channelLogs").doc(docName).set(chatData)
+            .then(function() {
+                console.log("Document successfully written! in database");
             })
             .catch(function(error) {
-                console.error("Error adding document: ", error);
+                console.error("Error writing document: ", error);
             });
     };
 
-    this.readAllChatLogs = (channelName) => {
-        db.collection(channelName).get().then(function(querySnapshot) {
-            querySnapshot.forEach(function(doc) {
-                // doc.data() is never undefined for query doc snapshots
-                console.log(doc.id, " => ", doc.data());
-            });
+    this.readAllChatLogs = async (channelName) => {
+        const chatLogsData = {};
+        const querySnapshot = await db.collection(channelName).get();
+        querySnapshot.forEach(function (doc) {
+            // doc.data() is never undefined for query doc snapshots
+            // console.log(doc.id, " => ", doc.data());
+            chatLogsData[doc.id] = doc.data();
         });
 
+        return chatLogsData;
     };
 
 };
