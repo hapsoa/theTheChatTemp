@@ -28,7 +28,7 @@ var uiManager = new function () {
                         case 2:
                             userInDatabase = _context.sent;
 
-                            // console.log(user);
+
                             if (user) {
                                 // 프로그레스 창 -> 더더챗창 으로
                                 $thetheChatWindow.removeClass('display-none');
@@ -70,6 +70,10 @@ var uiManager = new function () {
     });
     firebaseApi.setListener('signOut', function () {
         window.location.replace("/login");
+    });
+
+    firebaseDb.setListener('realTimeChannelUpdate', function () {
+        // chatLog를 단다.
     });
 
     var getUserInitial = function getUserInitial(userDisplayName) {
@@ -124,10 +128,9 @@ var uiManager = new function () {
                         case 2:
                             chatLogsData = _context2.sent;
 
-                            // console.log(chatLogsData);
 
                             _.forOwn(chatLogsData, function (value, key) {
-                                console.log(value);
+                                // console.log(value);
                                 chatLogs.push(new ChatLog(value));
                             });
 
@@ -193,10 +196,12 @@ var uiManager = new function () {
         var date = new Date(chatData.time);
         var displayTime = getChatLogTime(date);
 
-        var $template = $('\n        <div class="chat-content">\n            <div class="chat-image-zone">\n                <div class="chat-image orange">' + chatData.userInitial + '</div>\n                <div class="i fas fa-cog display-none"></div>\n            </div>\n            <div class="chat">\n                <div class="chat-profile-content">\n                    <div class="profile-name">' + chatData.userName + '</div>\n                    <div class="profile-owner-content">\n                        <div class="owner-text admin"></div>\n                        <div class="owner-text owner"></div>\n                    </div>\n                    <div class="profile-date">' + displayTime + '</div>\n                    <div class="i fas fa-cog"></div>\n                </div>\n                <div class="chat-text-content">' + chatData.content + '</div>\n            </div>\n        </div>\n        ');
+        // if (chatData.type === 'message') {
+        var $template = $('\n                <div class="chat-content">\n                    <div class="chat-image-zone">\n                        <div class="chat-image orange">' + chatData.userInitial + '</div>\n                        <div class="i fas fa-cog display-none"></div>\n                    </div>\n                    <div class="chat">\n                        <div class="chat-profile-content">\n                            <div class="profile-name">' + chatData.userName + '</div>\n                            <div class="profile-owner-content">\n                                <div class="owner-text admin"></div>\n                                <div class="owner-text owner"></div>\n                            </div>\n                            <div class="profile-date">' + displayTime + '</div>\n                            <div class="i fas fa-cog"></div>\n                        </div>\n                        <div class="chat-text-content">' + chatData.content + '</div>\n                    </div>\n                </div>\n                ');
 
-        if (chatLogs.length > 0) console.log(chatLogs[chatLogs.length - 1].getMinutes());
-        console.log(date.getMinutes());
+        // if (chatLogs.length > 0)
+        //     console.log(chatLogs[chatLogs.length - 1].getMinutes());
+        // console.log(date.getMinutes());
         // 같은 유저의 채팅로그이고, 시간이 같을 때, 프로필 정보들을 지워주고 화면에 보여준다.
 
         if (chatLogs.length > 0) {
@@ -211,6 +216,8 @@ var uiManager = new function () {
                 $template.find('.chat-profile-content > .fa-cog').remove();
             }
         }
+        // }
+
 
         $chatLogsZone.append($template);
 
@@ -256,30 +263,7 @@ var uiManager = new function () {
 
             firebaseApi.uploadFile(chatData, file);
             // cardManager.cardList.push(new Card(file));
+            chatLogs.push(new ChatLog(chatData));
         });
     });
-
-    // /**
-    //  * File upload button
-    //  */
-    // $uploadButton.on('click', function () {
-    //     $('input[type="file"]').trigger('click');
-    // });
-    // const $internalUploadButton = $('input[type="file"]');
-    // $internalUploadButton.on('click', function (e) {
-    //     e.stopPropagation();
-    // });
-    // $internalUploadButton.on('change', function () {
-    //     const currentUser = firebase.auth().currentUser;
-    //     const selectedFiles = document.getElementById('hiddenUploadButton').files;
-    //
-    //     _.forEach(selectedFiles, function (file) {
-    //         // 파일들을 데이터베이스에 저장한다.
-    //         // 파일들을 클라우드 저장소에 저장한다.
-    //         firebaseApi.writeFile(currentUser, file);
-    //         cardManager.cardList.push(new Card(file));
-    //     });
-    //
-    // });
-
 }();

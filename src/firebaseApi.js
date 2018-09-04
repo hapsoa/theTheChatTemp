@@ -73,6 +73,9 @@ const firebaseApi = new function () {
         firebaseStorage.uploadFile(chatData, file);
     };
 
+
+
+
 };
 
 const firebaseDb = new function () {
@@ -135,8 +138,10 @@ const firebaseDb = new function () {
     };
 
     this.uploadChatLog = (chatData) => {
-        const docName = String(chatData.time);
-        db.collection(`_${chatData.channel}`).doc(docName).set(chatData)
+        const timeString = String(chatData.time);
+
+        db.collection('channel').doc(chatData.channel)
+            .collection('messages').doc(timeString).set(chatData)
             .then(function () {
                 console.log("Document successfully written! in database");
             })
@@ -146,9 +151,10 @@ const firebaseDb = new function () {
     };
 
     this.readAllChatLogs = async (channelName) => {
-        const convertedChannelName = '_' + channelName;
+
         const chatLogsData = {};
-        const querySnapshot = await db.collection(convertedChannelName).get();
+        const querySnapshot = await db.collection('channel').doc(channelName)
+            .collection('messages').get();
         querySnapshot.forEach(function (doc) {
             // doc.data() is never undefined for query doc snapshots
             // console.log(doc.id, " => ", doc.data());
@@ -157,6 +163,34 @@ const firebaseDb = new function () {
 
         return chatLogsData;
     };
+
+
+    const listener = {
+        realTimeChannelUpdate: null
+    };
+    this.setListener = (listenerName, listenerFunction) => {
+        listener[listenerName] = listenerFunction;
+    };
+    const makeRealTimeChannelUpdate = (channelName) => {
+        db.collection("channel").doc(channelName)
+            .collection("messages")
+            .onSnapshot(function(snapshot) {
+                snapshot.docChanges().forEach(function(change) {
+                    if (change.type === "added") {
+                        console.log("New message: ", change.doc.data());
+                        // 메세지를 다는 코드
+                        listener.realTimeChannelUpdate();
+                    }
+                    if (change.type === "modified") {
+                        console.log("Modified message: ", change.doc.data());
+                    }
+                    if (change.type === "removed") {
+                        console.log("Removed message: ", change.doc.data());
+                    }
+                });
+            });
+    };
+    makeRealTimeChannelUpdate('general');
 
 
 };

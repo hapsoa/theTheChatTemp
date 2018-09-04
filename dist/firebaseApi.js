@@ -227,8 +227,9 @@ var firebaseDb = new function () {
     };
 
     this.uploadChatLog = function (chatData) {
-        var docName = String(chatData.time);
-        db.collection("_" + chatData.channel).doc(docName).set(chatData).then(function () {
+        var timeString = String(chatData.time);
+
+        db.collection('channel').doc(chatData.channel).collection('messages').doc(timeString).set(chatData).then(function () {
             console.log("Document successfully written! in database");
         }).catch(function (error) {
             console.error("Error writing document: ", error);
@@ -237,17 +238,16 @@ var firebaseDb = new function () {
 
     this.readAllChatLogs = function () {
         var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(channelName) {
-            var convertedChannelName, chatLogsData, querySnapshot;
+            var chatLogsData, querySnapshot;
             return regeneratorRuntime.wrap(function _callee4$(_context4) {
                 while (1) {
                     switch (_context4.prev = _context4.next) {
                         case 0:
-                            convertedChannelName = '_' + channelName;
                             chatLogsData = {};
-                            _context4.next = 4;
-                            return db.collection(convertedChannelName).get();
+                            _context4.next = 3;
+                            return db.collection('channel').doc(channelName).collection('messages').get();
 
-                        case 4:
+                        case 3:
                             querySnapshot = _context4.sent;
 
                             querySnapshot.forEach(function (doc) {
@@ -258,7 +258,7 @@ var firebaseDb = new function () {
 
                             return _context4.abrupt("return", chatLogsData);
 
-                        case 7:
+                        case 6:
                         case "end":
                             return _context4.stop();
                     }
@@ -270,6 +270,31 @@ var firebaseDb = new function () {
             return _ref4.apply(this, arguments);
         };
     }();
+
+    var listener = {
+        realTimeChannelUpdate: null
+    };
+    this.setListener = function (listenerName, listenerFunction) {
+        listener[listenerName] = listenerFunction;
+    };
+    var makeRealTimeChannelUpdate = function makeRealTimeChannelUpdate(channelName) {
+        db.collection("channel").doc(channelName).collection("messages").onSnapshot(function (snapshot) {
+            snapshot.docChanges().forEach(function (change) {
+                if (change.type === "added") {
+                    console.log("New message: ", change.doc.data());
+                    // 메세지를 다는 코드
+                    listener.realTimeChannelUpdate();
+                }
+                if (change.type === "modified") {
+                    console.log("Modified message: ", change.doc.data());
+                }
+                if (change.type === "removed") {
+                    console.log("Removed message: ", change.doc.data());
+                }
+            });
+        });
+    };
+    makeRealTimeChannelUpdate('general');
 }();
 
 var firebaseStorage = new function () {

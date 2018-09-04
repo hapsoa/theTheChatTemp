@@ -14,7 +14,7 @@ const uiManager = new function () {
         // 유저 정보를 가져오고, 데이터베이스에 있으면 아래 로직
         // 없으면 login 화면으로 이동
         const userInDatabase = await firebaseDb.readUser(user.uid);
-        // console.log(user);
+
         if (user) {
             // 프로그레스 창 -> 더더챗창 으로
             $thetheChatWindow.removeClass('display-none');
@@ -44,6 +44,10 @@ const uiManager = new function () {
     });
     firebaseApi.setListener('signOut', () => {
         window.location.replace("/login");
+    });
+
+    firebaseDb.setListener('realTimeChannelUpdate', () => {
+        // chatLog를 단다.
     });
 
     const getUserInitial = (userDisplayName) => {
@@ -85,10 +89,9 @@ const uiManager = new function () {
         // 데이터베이스에서 채팅로그들을 모두읽어와서, 업데이트 한다.
     const initializeChatLogs = async () => {
             const chatLogsData = await firebaseDb.readAllChatLogs('general');
-            // console.log(chatLogsData);
 
             _.forOwn(chatLogsData, (value, key) => {
-                console.log(value);
+                // console.log(value);
                 chatLogs.push(new ChatLog(value));
             })
 
@@ -143,45 +146,47 @@ const uiManager = new function () {
         const date = new Date(chatData.time);
         const displayTime = getChatLogTime(date);
 
-        const $template = $(`
-        <div class="chat-content">
-            <div class="chat-image-zone">
-                <div class="chat-image orange">${chatData.userInitial}</div>
-                <div class="i fas fa-cog display-none"></div>
-            </div>
-            <div class="chat">
-                <div class="chat-profile-content">
-                    <div class="profile-name">${chatData.userName}</div>
-                    <div class="profile-owner-content">
-                        <div class="owner-text admin"></div>
-                        <div class="owner-text owner"></div>
+        // if (chatData.type === 'message') {
+            const $template = $(`
+                <div class="chat-content">
+                    <div class="chat-image-zone">
+                        <div class="chat-image orange">${chatData.userInitial}</div>
+                        <div class="i fas fa-cog display-none"></div>
                     </div>
-                    <div class="profile-date">${displayTime}</div>
-                    <div class="i fas fa-cog"></div>
+                    <div class="chat">
+                        <div class="chat-profile-content">
+                            <div class="profile-name">${chatData.userName}</div>
+                            <div class="profile-owner-content">
+                                <div class="owner-text admin"></div>
+                                <div class="owner-text owner"></div>
+                            </div>
+                            <div class="profile-date">${displayTime}</div>
+                            <div class="i fas fa-cog"></div>
+                        </div>
+                        <div class="chat-text-content">${chatData.content}</div>
+                    </div>
                 </div>
-                <div class="chat-text-content">${chatData.content}</div>
-            </div>
-        </div>
-        `);
+                `);
 
-        if (chatLogs.length > 0)
-            console.log(chatLogs[chatLogs.length - 1].getMinutes());
-        console.log(date.getMinutes());
-        // 같은 유저의 채팅로그이고, 시간이 같을 때, 프로필 정보들을 지워주고 화면에 보여준다.
+            // if (chatLogs.length > 0)
+            //     console.log(chatLogs[chatLogs.length - 1].getMinutes());
+            // console.log(date.getMinutes());
+            // 같은 유저의 채팅로그이고, 시간이 같을 때, 프로필 정보들을 지워주고 화면에 보여준다.
 
-        if (chatLogs.length > 0) {
-            let frontChatLog = chatLogs[chatLogs.length - 1];
+            if (chatLogs.length > 0) {
+                let frontChatLog = chatLogs[chatLogs.length - 1];
 
-            if (chatData.uid === frontChatLog.getUser() &&
-                date.getMinutes() - frontChatLog.getMinutes() === 0) {
-                console.log(true);
-                $template.find('.chat-image').text('');
-                $template.find('.profile-name').text('');
-                $template.find('.profile-date').text('');
-                $template.find('.chat-image-zone > .fa-cog').removeClass('display-none');
-                $template.find('.chat-profile-content > .fa-cog').remove();
+                if (chatData.uid === frontChatLog.getUser() &&
+                    date.getMinutes() - frontChatLog.getMinutes() === 0) {
+                    console.log(true);
+                    $template.find('.chat-image').text('');
+                    $template.find('.profile-name').text('');
+                    $template.find('.profile-date').text('');
+                    $template.find('.chat-image-zone > .fa-cog').removeClass('display-none');
+                    $template.find('.chat-profile-content > .fa-cog').remove();
+                }
             }
-        }
+        // }
 
 
         $chatLogsZone.append($template);
@@ -231,31 +236,10 @@ const uiManager = new function () {
 
             firebaseApi.uploadFile(chatData, file);
             // cardManager.cardList.push(new Card(file));
+            chatLogs.push(new ChatLog(chatData));
         });
     });
 
-    // /**
-    //  * File upload button
-    //  */
-    // $uploadButton.on('click', function () {
-    //     $('input[type="file"]').trigger('click');
-    // });
-    // const $internalUploadButton = $('input[type="file"]');
-    // $internalUploadButton.on('click', function (e) {
-    //     e.stopPropagation();
-    // });
-    // $internalUploadButton.on('change', function () {
-    //     const currentUser = firebase.auth().currentUser;
-    //     const selectedFiles = document.getElementById('hiddenUploadButton').files;
-    //
-    //     _.forEach(selectedFiles, function (file) {
-    //         // 파일들을 데이터베이스에 저장한다.
-    //         // 파일들을 클라우드 저장소에 저장한다.
-    //         firebaseApi.writeFile(currentUser, file);
-    //         cardManager.cardList.push(new Card(file));
-    //     });
-    //
-    // });
 
 
 };

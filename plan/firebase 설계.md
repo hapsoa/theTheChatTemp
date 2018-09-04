@@ -7,6 +7,7 @@ ChatLog
 $signInButton
 ChatLog(logData)
 
+
 <- firebaseApi ->
 onAuthStateChanged()
 signIn()
@@ -16,8 +17,11 @@ listener
 setListener()
 
 <- firebaseDB ->
-getUser()
-updateUser()
+readUser(uid)
+createUser(user)
+updateUser(user)
+uploadChatLog(chatData)
+readAllChatLogs(channelName)
 
 user: {
     uid1: {
@@ -37,28 +41,47 @@ user: {
 
     }
 }
-
-channel_1: {
-    millisecondsTime_1: {
-        channel: "",
-        uid: "",
-        userInitial: "",
-        userName: "",
-        time: "",
-        type: "file/image" or "message",
-        content: ""
+channel : {
+    channelName_1: {
+        messages: {
+            millisecondsTime_1: {
+                channel: "",
+                uid: "",
+                userInitial: "",
+                userName: "",
+                time: "",
+                type: "file/image" or "message",
+                content: ""
+            },
+            millisecondsTime_2: {
+                
+            }
+        }
+        
     },
-    millisecondsTime_2: {
-        channel: "",
-        uid: "",
-        userInitial: "",
-        userName: "",
-        time: "",
-        type: "file/image" or "message",
-        fileName: "",
-        content: ""
+    channelName_2: {
+
     }
 }
+
+channel: {
+    channelName_1: {
+        messages: {
+            millisecondsTime_1: {
+                channel: "",
+                uid: "",
+                userInitial: "",
+                userName: "",
+                time: "",
+                type: "file/image" or "message",
+                content: ""
+            },
+            millisecondsTime_2
+        }
+    },
+    channelName_2
+}
+
 
 <- firebaseStorage ->
 
@@ -67,6 +90,5 @@ channel_1 : {
     millisecondsTime2: fileName
 },
 channel_2 : {
-    millisecondsTime1: fileName,
-    millisecondsTime2: fileName
+   
 }
