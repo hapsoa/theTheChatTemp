@@ -70,7 +70,7 @@ const firebaseApi = new function () {
 
     this.uploadFile = (chatData, file) => {
         firebaseDb.uploadChatLog(chatData);
-        firebaseStorage.uploadFile(chatData.uid, file);
+        firebaseStorage.uploadFile(chatData, file);
     };
 
 };
@@ -136,7 +136,7 @@ const firebaseDb = new function () {
 
     this.uploadChatLog = (chatData) => {
         const docName = String(chatData.time);
-        db.collection("channelLogs").doc(docName).set(chatData)
+        db.collection(`_${chatData.channel}`).doc(docName).set(chatData)
             .then(function () {
                 console.log("Document successfully written! in database");
             })
@@ -146,8 +146,9 @@ const firebaseDb = new function () {
     };
 
     this.readAllChatLogs = async (channelName) => {
+        const convertedChannelName = '_' + channelName;
         const chatLogsData = {};
-        const querySnapshot = await db.collection(channelName).get();
+        const querySnapshot = await db.collection(convertedChannelName).get();
         querySnapshot.forEach(function (doc) {
             // doc.data() is never undefined for query doc snapshots
             // console.log(doc.id, " => ", doc.data());
@@ -164,11 +165,10 @@ const firebaseStorage = new function () {
     const storage = firebase.storage();
     const storageRef = storage.ref();
 
-    this.uploadFile = (uid, file) => {
+    this.uploadFile = (chatData, file) => {
         // ref를 설정하고,
-        let fileRef;
-
-        fileRef = storageRef.child(`${uid}/${file.name}`);
+        const fileRef = storageRef.child(
+            `${chatData.channel}/${chatData.time}/${chatData.fileName}`);
 
         // 저장을 한다.
         fileRef.put(file).then(function (snapshot) {

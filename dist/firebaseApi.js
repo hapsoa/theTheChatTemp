@@ -107,7 +107,7 @@ var firebaseApi = new function () {
 
     this.uploadFile = function (chatData, file) {
         firebaseDb.uploadChatLog(chatData);
-        firebaseStorage.uploadFile(chatData.uid, file);
+        firebaseStorage.uploadFile(chatData, file);
     };
 }();
 
@@ -228,7 +228,7 @@ var firebaseDb = new function () {
 
     this.uploadChatLog = function (chatData) {
         var docName = String(chatData.time);
-        db.collection("channelLogs").doc(docName).set(chatData).then(function () {
+        db.collection("_" + chatData.channel).doc(docName).set(chatData).then(function () {
             console.log("Document successfully written! in database");
         }).catch(function (error) {
             console.error("Error writing document: ", error);
@@ -237,16 +237,17 @@ var firebaseDb = new function () {
 
     this.readAllChatLogs = function () {
         var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(channelName) {
-            var chatLogsData, querySnapshot;
+            var convertedChannelName, chatLogsData, querySnapshot;
             return regeneratorRuntime.wrap(function _callee4$(_context4) {
                 while (1) {
                     switch (_context4.prev = _context4.next) {
                         case 0:
+                            convertedChannelName = '_' + channelName;
                             chatLogsData = {};
-                            _context4.next = 3;
-                            return db.collection(channelName).get();
+                            _context4.next = 4;
+                            return db.collection(convertedChannelName).get();
 
-                        case 3:
+                        case 4:
                             querySnapshot = _context4.sent;
 
                             querySnapshot.forEach(function (doc) {
@@ -257,7 +258,7 @@ var firebaseDb = new function () {
 
                             return _context4.abrupt("return", chatLogsData);
 
-                        case 6:
+                        case 7:
                         case "end":
                             return _context4.stop();
                     }
@@ -275,11 +276,9 @@ var firebaseStorage = new function () {
     var storage = firebase.storage();
     var storageRef = storage.ref();
 
-    this.uploadFile = function (uid, file) {
+    this.uploadFile = function (chatData, file) {
         // ref를 설정하고,
-        var fileRef = void 0;
-
-        fileRef = storageRef.child(uid + "/" + file.name);
+        var fileRef = storageRef.child(chatData.channel + "/" + chatData.time + "/" + chatData.fileName);
 
         // 저장을 한다.
         fileRef.put(file).then(function (snapshot) {

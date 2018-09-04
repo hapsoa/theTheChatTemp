@@ -84,7 +84,7 @@ const uiManager = new function () {
      */
         // 데이터베이스에서 채팅로그들을 모두읽어와서, 업데이트 한다.
     const initializeChatLogs = async () => {
-            const chatLogsData = await firebaseDb.readAllChatLogs('channelLogs');
+            const chatLogsData = await firebaseDb.readAllChatLogs('general');
             // console.log(chatLogsData);
 
             _.forOwn(chatLogsData, (value, key) => {
@@ -114,6 +114,7 @@ const uiManager = new function () {
                 // 채팅이 입력이 된다.
                 const time = new Date().getTime();
                 const chatData = {
+                    channel: "general",
                     uid: userData.uid,
                     userInitial: userData.userInitial,
                     userName: userData.userName,
@@ -211,6 +212,7 @@ const uiManager = new function () {
     $hiddenUploadButton.on('change', function () {
         const time = new Date().getTime();
         const chatData = {
+            channel: "general",
             uid: userData.uid,
             userInitial: userData.userInitial,
             userName: userData.userName,
@@ -228,7 +230,7 @@ const uiManager = new function () {
             chatData.fileName = file.name;
 
             firebaseApi.uploadFile(chatData, file);
-            cardManager.cardList.push(new Card(file));
+            // cardManager.cardList.push(new Card(file));
         });
     });
 

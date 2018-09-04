@@ -38,8 +38,9 @@ user: {
     }
 }
 
-channelLogs: {
-    randomDocName1: {
+channel_1: {
+    millisecondsTime_1: {
+        channel: "",
         uid: "",
         userInitial: "",
         userName: "",
@@ -47,7 +48,8 @@ channelLogs: {
         type: "file/image" or "message",
         content: ""
     },
-    randomDocName1 {
+    millisecondsTime_2: {
+        channel: "",
         uid: "",
         userInitial: "",
         userName: "",
@@ -60,3 +62,11 @@ channelLogs: {
 
 <- firebaseStorage ->
 
+channel_1 : {
+    millisecondsTime1: fileName,
+    millisecondsTime2: fileName
+},
+channel_2 : {
+    millisecondsTime1: fileName,
+    millisecondsTime2: fileName
+}

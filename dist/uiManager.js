@@ -119,7 +119,7 @@ var uiManager = new function () {
                     switch (_context2.prev = _context2.next) {
                         case 0:
                             _context2.next = 2;
-                            return firebaseDb.readAllChatLogs('channelLogs');
+                            return firebaseDb.readAllChatLogs('general');
 
                         case 2:
                             chatLogsData = _context2.sent;
@@ -164,6 +164,7 @@ var uiManager = new function () {
                 // 채팅이 입력이 된다.
                 var time = new Date().getTime();
                 var chatData = {
+                    channel: "general",
                     uid: userData.uid,
                     userInitial: userData.userInitial,
                     userName: userData.userName,
@@ -236,6 +237,7 @@ var uiManager = new function () {
     $hiddenUploadButton.on('change', function () {
         var time = new Date().getTime();
         var chatData = {
+            channel: "general",
             uid: userData.uid,
             userInitial: userData.userInitial,
             userName: userData.userName,
@@ -253,7 +255,7 @@ var uiManager = new function () {
             chatData.fileName = file.name;
 
             firebaseApi.uploadFile(chatData, file);
-            cardManager.cardList.push(new Card(file));
+            // cardManager.cardList.push(new Card(file));
         });
     });
 
