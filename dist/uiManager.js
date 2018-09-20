@@ -72,8 +72,9 @@ var uiManager = new function () {
         window.location.replace("/login");
     });
 
-    firebaseDb.setListener('realTimeChannelUpdate', function () {
+    firebaseDb.setListener('realTimeChannelUpdate', function (chatData) {
         // chatLog를 단다.
+        chatLogs.push(new ChatLog(chatData));
     });
 
     var getUserInitial = function getUserInitial(userDisplayName) {
@@ -95,10 +96,8 @@ var uiManager = new function () {
     // 채팅 로그 시간 구하기
     var getChatLogTime = function getChatLogTime(date) {
         var displayTime = void 0;
-
         // const date = new Date(millisecondsTime);
         var hours = date.getHours();
-
         if (hours <= 12) {
             // 0 ~ 12시
             displayTime = '오전 ' + hours + '시 ' + date.getMinutes() + '분';
@@ -107,7 +106,6 @@ var uiManager = new function () {
             hours -= 12;
             displayTime = '오후 ' + hours + '시 ' + date.getMinutes() + '분';
         }
-
         return displayTime;
     };
 
@@ -128,7 +126,6 @@ var uiManager = new function () {
                         case 2:
                             chatLogsData = _context2.sent;
 
-
                             _.forOwn(chatLogsData, function (value, key) {
                                 // console.log(value);
                                 chatLogs.push(new ChatLog(value));
@@ -146,7 +143,7 @@ var uiManager = new function () {
             return _ref2.apply(this, arguments);
         };
     }();
-    initializeChatLogs();
+    // initializeChatLogs();
 
     /**
      * Logout Button
@@ -176,7 +173,7 @@ var uiManager = new function () {
                     content: $chatInputBox.val()
                 };
 
-                chatLogs.push(new ChatLog(chatData));
+                // chatLogs.push(new ChatLog(chatData));
                 $chatInputBox.val('');
 
                 // 데이터베이스에 채팅입력정보를 보낸다
@@ -196,8 +193,7 @@ var uiManager = new function () {
         var date = new Date(chatData.time);
         var displayTime = getChatLogTime(date);
 
-        // if (chatData.type === 'message') {
-        var $template = $('\n                <div class="chat-content">\n                    <div class="chat-image-zone">\n                        <div class="chat-image orange">' + chatData.userInitial + '</div>\n                        <div class="i fas fa-cog display-none"></div>\n                    </div>\n                    <div class="chat">\n                        <div class="chat-profile-content">\n                            <div class="profile-name">' + chatData.userName + '</div>\n                            <div class="profile-owner-content">\n                                <div class="owner-text admin"></div>\n                                <div class="owner-text owner"></div>\n                            </div>\n                            <div class="profile-date">' + displayTime + '</div>\n                            <div class="i fas fa-cog"></div>\n                        </div>\n                        <div class="chat-text-content">' + chatData.content + '</div>\n                    </div>\n                </div>\n                ');
+        var $template = $('\n                <div class="chat-content">\n                    <div class="chat-image-zone">\n                        <div class="chat-image orange">' + chatData.userInitial + '</div>\n                        <div class="i fas fa-cog display-none"></div>\n                    </div>\n                    <div class="chat">\n                        <div class="chat-profile-content">\n                            <div class="profile-name">' + chatData.userName + '</div>\n                            <div class="profile-owner-content">\n                                <div class="owner-text admin"></div>\n                                <div class="owner-text owner"></div>\n                            </div>\n                            <div class="profile-date">' + displayTime + '</div>\n                            <div class="i fas fa-cog"></div>\n                        </div>\n                        <div class="file-name"></div>\n                        <div class="chat-text-content">' + chatData.content + '</div>\n                    </div>\n                </div>\n                ');
 
         // if (chatLogs.length > 0)
         //     console.log(chatLogs[chatLogs.length - 1].getMinutes());
@@ -216,8 +212,11 @@ var uiManager = new function () {
                 $template.find('.chat-profile-content > .fa-cog').remove();
             }
         }
-        // }
 
+        if (chatData.type !== 'message') {
+            $template.find('.file-name').text(chatData.fileName);
+            $template.find('.chat-text-content').text('hi');
+        }
 
         $chatLogsZone.append($template);
 

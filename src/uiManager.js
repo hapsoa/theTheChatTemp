@@ -46,8 +46,9 @@ const uiManager = new function () {
         window.location.replace("/login");
     });
 
-    firebaseDb.setListener('realTimeChannelUpdate', () => {
+    firebaseDb.setListener('realTimeChannelUpdate', (chatData) => {
         // chatLog를 단다.
+        chatLogs.push(new ChatLog(chatData));
     });
 
     const getUserInitial = (userDisplayName) => {
@@ -69,17 +70,14 @@ const uiManager = new function () {
     // 채팅 로그 시간 구하기
     const getChatLogTime = (date) => {
         let displayTime;
-
         // const date = new Date(millisecondsTime);
         let hours = date.getHours();
-
         if (hours <= 12) { // 0 ~ 12시
             displayTime = '오전 ' + hours + '시 ' + date.getMinutes() + '분';
         } else { // 13 ~ 24시
             hours -= 12;
             displayTime = '오후 ' + hours + '시 ' + date.getMinutes() + '분';
         }
-
         return displayTime;
     };
 
@@ -89,14 +87,13 @@ const uiManager = new function () {
         // 데이터베이스에서 채팅로그들을 모두읽어와서, 업데이트 한다.
     const initializeChatLogs = async () => {
             const chatLogsData = await firebaseDb.readAllChatLogs('general');
-
             _.forOwn(chatLogsData, (value, key) => {
                 // console.log(value);
                 chatLogs.push(new ChatLog(value));
             })
 
         };
-    initializeChatLogs();
+    // initializeChatLogs();
 
     /**
      * Logout Button
@@ -126,7 +123,7 @@ const uiManager = new function () {
                     content: $chatInputBox.val()
                 };
 
-                chatLogs.push(new ChatLog(chatData));
+                // chatLogs.push(new ChatLog(chatData));
                 $chatInputBox.val('');
 
                 // 데이터베이스에 채팅입력정보를 보낸다
@@ -146,8 +143,8 @@ const uiManager = new function () {
         const date = new Date(chatData.time);
         const displayTime = getChatLogTime(date);
 
-        // if (chatData.type === 'message') {
-            const $template = $(`
+
+        const $template = $(`
                 <div class="chat-content">
                     <div class="chat-image-zone">
                         <div class="chat-image orange">${chatData.userInitial}</div>
@@ -163,31 +160,35 @@ const uiManager = new function () {
                             <div class="profile-date">${displayTime}</div>
                             <div class="i fas fa-cog"></div>
                         </div>
+                        <div class="file-name"></div>
                         <div class="chat-text-content">${chatData.content}</div>
                     </div>
                 </div>
                 `);
 
-            // if (chatLogs.length > 0)
-            //     console.log(chatLogs[chatLogs.length - 1].getMinutes());
-            // console.log(date.getMinutes());
-            // 같은 유저의 채팅로그이고, 시간이 같을 때, 프로필 정보들을 지워주고 화면에 보여준다.
+        // if (chatLogs.length > 0)
+        //     console.log(chatLogs[chatLogs.length - 1].getMinutes());
+        // console.log(date.getMinutes());
+        // 같은 유저의 채팅로그이고, 시간이 같을 때, 프로필 정보들을 지워주고 화면에 보여준다.
 
-            if (chatLogs.length > 0) {
-                let frontChatLog = chatLogs[chatLogs.length - 1];
+        if (chatLogs.length > 0) {
+            let frontChatLog = chatLogs[chatLogs.length - 1];
 
-                if (chatData.uid === frontChatLog.getUser() &&
-                    date.getMinutes() - frontChatLog.getMinutes() === 0) {
-                    console.log(true);
-                    $template.find('.chat-image').text('');
-                    $template.find('.profile-name').text('');
-                    $template.find('.profile-date').text('');
-                    $template.find('.chat-image-zone > .fa-cog').removeClass('display-none');
-                    $template.find('.chat-profile-content > .fa-cog').remove();
-                }
+            if (chatData.uid === frontChatLog.getUser() &&
+                date.getMinutes() - frontChatLog.getMinutes() === 0) {
+                console.log(true);
+                $template.find('.chat-image').text('');
+                $template.find('.profile-name').text('');
+                $template.find('.profile-date').text('');
+                $template.find('.chat-image-zone > .fa-cog').removeClass('display-none');
+                $template.find('.chat-profile-content > .fa-cog').remove();
             }
-        // }
+        }
 
+        if (chatData.type !== 'message') {
+            $template.find('.file-name').text(chatData.fileName);
+            $template.find('.chat-text-content').text('hi');
+        }
 
         $chatLogsZone.append($template);
 
@@ -239,7 +240,6 @@ const uiManager = new function () {
             chatLogs.push(new ChatLog(chatData));
         });
     });
-
 
 
 };

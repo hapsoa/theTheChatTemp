@@ -179,7 +179,8 @@ const firebaseDb = new function () {
                     if (change.type === "added") {
                         console.log("New message: ", change.doc.data());
                         // 메세지를 다는 코드
-                        listener.realTimeChannelUpdate();
+                        if (listener.realTimeChannelUpdate !== null)
+                            listener.realTimeChannelUpdate(change.doc.data());
                     }
                     if (change.type === "modified") {
                         console.log("Modified message: ", change.doc.data());

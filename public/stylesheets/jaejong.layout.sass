@@ -189,6 +189,10 @@ body
         display: flex
         padding: 8px 16px 0 16px
         position: relative
+        &:hover
+          background-color: #f2f2f2
+          .fa-cog
+            visibility: visible
         .chat-image-zone
           width: 40px
           .chat-image
@@ -202,6 +206,7 @@ body
             &.orange
               background: $state-occupied
           .i.fas.fa-cog
+            visibility: hidden
             width: 100%
             color: $font-grey-third
             font-size: 12px
@@ -225,7 +230,7 @@ body
                 text-align: center
                 margin: 0 2px
                 font-size: 12px
-                width: 40px
+                //width: 40px
                 background: $background-grey-third
                 color: #fdfdfd
                 border-radius: 2px
